@@ -4,8 +4,12 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const http = require("http");
 const socketIo = require("socket.io");
-const cookieSession = require('cookie-session')
-//mongoose.connect(keys.mongoURI);
+const cookieSession = require('cookie-session');
+const keys = require('./config/keys');
+mongoose.connect(keys.mongoURI);
+mongoose.connection.on('open', function() {
+    console.log("connected to mongo db");
+})
 const app = express();
 app.use(bodyParser.json());
 app.use(cookieSession({
@@ -19,8 +23,14 @@ app.use(passport.session());
 
 const server = http.createServer(app);
 const io = socketIo(server);
+
+require('./models/User');
+require('./models/Event');
+
+
 require('./services/socket')(io);
 require('./services/passport');
+
 
 require('./routes/authRoutes')(app);
 require('./routes/calendarRoutes')(app);

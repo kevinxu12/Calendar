@@ -3,6 +3,7 @@ const keys = require('../config/keys');
 module.exports = {
     buildAuthClient: async function buildAuthClient(req) {
         var user = req.session.passport.user;
+        console.log("building auth client helper function called");
         const accessToken = user.accessToken;
         const refreshToken = user.refreshToken;
         var callbackURL = '/auth/google/callback'
@@ -22,6 +23,7 @@ module.exports = {
     },
 
     getAllEvents: function getAllEvents(calendar, oauth2Client, callback) {
+        console.log("getting all events helper function called");
         calendar.events.list({
             auth: oauth2Client,
             calendarId: 'primary',
@@ -30,7 +32,6 @@ module.exports = {
             singleEvents: true,
             orderBy: 'startTime'
         }, function (err, response) {
-            console.log("events");
             const data = response.data.items
             // standardized to PST
             const calendarList = data.map((entry) => {
