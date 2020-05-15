@@ -43,13 +43,10 @@ passport.use(new GoogleStrategy({
             console.log("New User successfully created");
         }
     }
-
-    console.log("user already exists");
-    const deleteResponse = Event.deleteMany({ owner: email });
+       //next part of code syncs events
+    const deleteResponse = await Event.deleteMany({ owner: email });
     console.log("wiped events");
 
-
-    // next part of code syncs events
     var obj = await helperFunctions.buildAuthClient(req);
     var calendar = obj.calendar;
     var oauth2Client = obj.oauth2Client;

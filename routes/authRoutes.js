@@ -6,7 +6,7 @@ module.exports = (app) => {
         passport.authenticate('google', {
             accessType: 'offline',
             prompt: 'consent',
-            scope: ['https://www.googleapis.com/auth/calendar.readonly', 'profile', 'email']
+            scope: ['https://www.googleapis.com/auth/calendar', 'profile', 'email']
         }
         )
     );

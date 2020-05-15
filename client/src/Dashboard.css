@@ -1,0 +1,17 @@
+
+.day-view {
+    display: inline-block;
+    margin-left: 5%; 
+    width: 45%;
+    position: absolute;
+    height: 75%;
+    overflow-x: hidden; 
+    overflow-y: auto;
+    margin: 20px;
+}
+
+.calendar-view {
+    display: inline-block;
+    width: 50%;
+    margin: 20px;
+}

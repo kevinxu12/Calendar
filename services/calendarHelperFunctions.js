@@ -9,7 +9,7 @@ module.exports = {
         var callbackURL = '/auth/google/callback'
         var oauth2Client = new google.auth.OAuth2(
             keys.googleClientId,
-            keys.clientSecret,
+            keys.googleClientSecret,
             callbackURL
         );
 
@@ -24,6 +24,7 @@ module.exports = {
 
     getAllEvents: function getAllEvents(calendar, oauth2Client, callback) {
         console.log("getting all events helper function called");
+        console.log((new Date()).toISOString());
         calendar.events.list({
             auth: oauth2Client,
             calendarId: 'primary',

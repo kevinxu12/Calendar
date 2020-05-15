@@ -6,6 +6,7 @@ const eventSchema = new Schema({
     end: Date,
     description: String,
     creator: String,
+    owner: String,
     permissions: { type: String, required: false, enum: ['public', 'restricted', 'private'] }
 })
 
