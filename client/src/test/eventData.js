@@ -1,0 +1,12 @@
+export var testEventData = [{title: 'Testevent1',
+    startTime: 13,
+    endTime: 15, 
+    date: new Date(2020, 5, 12)}, 
+    {title: 'Testevent2', 
+    startTime: 13,
+    endTime: 16, 
+    date: new Date(2020, 5, 12)},
+    {title: 'Testevent3', 
+    startTime: 13,
+    endTime: 16, 
+    date: new Date(2020, 5, 12)}]

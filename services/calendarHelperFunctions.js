@@ -1,11 +1,10 @@
 const { google } = require('googleapis');
 const keys = require('../config/keys');
 module.exports = {
-    buildAuthClient: async function buildAuthClient(req) {
-        var user = req.session.passport.user;
+    buildAuthClient: async function buildAuthClient(access, refresh) {
         console.log("building auth client helper function called");
-        const accessToken = user.accessToken;
-        const refreshToken = user.refreshToken;
+        const accessToken = access;
+        const refreshToken = refresh;
         var callbackURL = '/auth/google/callback'
         var oauth2Client = new google.auth.OAuth2(
             keys.googleClientId,

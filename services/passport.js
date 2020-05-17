@@ -9,10 +9,12 @@ const User = mongoose.model('user');
 const Event = mongoose.model('event');
 const helperFunctions = require('./calendarHelperFunctions');
 passport.serializeUser((user, done) => {
+    //console.log(user);
     done(null, user);
 })
 
 passport.deserializeUser((id, done) => {
+    //console.log(id);
     done(null, id);
 })
 
@@ -43,31 +45,37 @@ passport.use(new GoogleStrategy({
             console.log("New User successfully created");
         }
     }
-       //next part of code syncs events
-    const deleteResponse = await Event.deleteMany({ owner: email });
-    console.log("wiped events");
+    //next part of code syncs events
+    console.log(req.query.state);
+    if (req.query.state !== "nosync") {
+        const deleteResponse = await Event.deleteMany({ owner: email });
+        console.log("wiped events");
 
-    var obj = await helperFunctions.buildAuthClient(req);
-    var calendar = obj.calendar;
-    var oauth2Client = obj.oauth2Client;
-    helperFunctions.getAllEvents(calendar, oauth2Client, async function (events) {
-        const eventObjects = events.map((event) => {
-            return new Event({
-                summary: event.summary,
-                start: event.start,
-                end: event.end,
-                description: event.description,
-                creator: event.creator,
-                owner: email,
-                permissions: 'public'
+        var obj = await helperFunctions.buildAuthClient(accessToken, refreshToken);
+        var calendar = obj.calendar;
+        var oauth2Client = obj.oauth2Client;
+        helperFunctions.getAllEvents(calendar, oauth2Client, async function (events) {
+            const eventObjects = events.map((event) => {
+                return new Event({
+                    summary: event.summary,
+                    start: event.start,
+                    end: event.end,
+                    description: event.description,
+                    creator: event.creator,
+                    owner: email,
+                    permissions: 'public'
+                })
             })
+            const eventResponse = await Event.insertMany(eventObjects);
+            if (eventResponse) {
+                console.log("Added events for " + fullName);
+            } else {
+                console.log("Error adding events into db")
+            }
+
+            done(null, { accessToken, refreshToken, profile })
         })
-        const eventResponse = await Event.insertMany(eventObjects);
-        if (eventResponse) {
-            console.log("Added events for " + fullName);
-        } else {
-            console.log("Error adding events into db")
-        }
-        done(null, { accessToken, refreshToken, profile })
-    })
+    } else {
+        done(null, { accessToken, refreshToken, profile }); 
+    }
 }))

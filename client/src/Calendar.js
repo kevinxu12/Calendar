@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
 import './Calendar.css'
-import obj from './dates';
-console.log(obj);
-var months = obj.months;
-var weekday = obj.weekdays;
+import { months, weekdays} from './dates';
 class Calendar extends Component {
     constructor(props) {
         super(props);
@@ -56,7 +53,7 @@ class Calendar extends Component {
 
                 <div className="col leftCol">
                     <div className="content">
-                        <h1 className="date">{weekday[day]}<span>{months[month]} {dayOfMonth}th</span></h1>
+                        <h1 className="date">{weekdays[day]}<span>{months[month]} {dayOfMonth}th</span></h1>
                     </div>
                 </div>
 
@@ -65,15 +62,14 @@ class Calendar extends Component {
                         <h2 className="year">{year}</h2>
                         <ul className="months" onClick = {(e) => {
                             var month = e.target.innerHTML;
-                            console.log(month);
                             this.setState({month: month});
                         }}>
                             {this.renderMonths()}
                         </ul>
                         <div className="clearfix"></div>
                         <ul className="days" onClick={(e) => {
-                            var day = e.target.innerHTML;
-                            this.props.handleSelectDay(months[month], day, year);
+                            var currentDay = e.target.innerText;
+                            this.props.handleSelectDay(months[month], currentDay, year, month);
                         }}>
                             {this.renderDays()}
                         </ul>

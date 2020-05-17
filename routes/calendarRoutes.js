@@ -5,7 +5,8 @@ const Event = mongoose.model('event');
 module.exports = (app) => {
     app.get('/api/getAllCalendars', async (req, res) => {
         console.log("called show all calendars");
-        var obj = await helperFunctions.buildAuthClient(req);
+        var user = req.session.passport.user;
+        var obj = await helperFunctions.buildAuthClient(user.accessToken, user.refreshToken);
         var calendar = obj.calendar;
         var oauth2Client = obj.oauth2Client;
         calendar.calendarList.list({ auth: oauth2Client }, function (err, response) {
@@ -13,13 +14,44 @@ module.exports = (app) => {
         })
     })
 
-    app.get('/api/getAllEvents', async (req, res) => {
-        console.log("called get all events");
-        var obj = await helperFunctions.buildAuthClient(req);
-        var calendar = obj.calendar;
-        var oauth2Client = obj.oauth2Client;
-        helperFunctions.getAllEvents(calendar, oauth2Client, function (events) {
-            res.send(events);
+    // app.get('/api/getAllEvents', async (req, res) => {
+    //     console.log("called get all events");
+    //     var obj = await helperFunctions.buildAuthClient(req);
+    //     var calendar = obj.calendar;
+    //     var oauth2Client = obj.oauth2Client;
+    //     helperFunctions.getAllEvents(calendar, oauth2Client, function (events) {
+    //         res.send(events);
+    //     })
+    // })
+
+
+    // requires {date: date object}
+    // takes email from session
+    // still in testing
+    app.post('/api/getAllEventsForDate', async (req, res) => {
+        console.log("calling get all events for date");
+        var startdate = new Date(req.body.startdate);
+        //var startdate = new Date(2020, 4, 15);
+        var enddate = new Date(req.body.startdate);
+        enddate.setDate(enddate.getDate() + 1);
+        var email = req.session.passport.user.profile.emails[0].value;
+        //var email = 'xukevinwork@gmail.com'
+        Event.find({owner: email, start: {$lt: enddate}, end: {$gt: startdate}}, function (err, response) {
+            if(err) {
+                res.end();
+            }
+            if(response) {
+                const editedResponse = response.map((event) => {
+                    if(event.start < startdate) {
+                        event.start = startdate;
+                    }
+                    if(event.end > enddate) {
+                        event.end = enddate;
+                    }
+                    return event;
+                })
+                res.send(editedResponse);
+            }
         })
     })
     // require a query 
@@ -33,33 +65,31 @@ module.exports = (app) => {
         var emailList = req.email;
         var range = req.query.range;
         var timezone = req.query.timezone
-        var startdate = new Date();
+        var latestStartDate = new Date();
         if(range === "week") {
-            startdate.setDate(startdate.getDate() + 7);
+            latestStartDate.setDate(latestStartDate.getDate() + 7);
         }
-        Event.find({owner: {"$in": emailList}, start: { $lt: startdate} }, function(err, response) {
+        var changes = 0;
+        Event.find({owner: {"$in": emailList}, start: { $lt: latestStartDate} }, function(err, response) {
             // first we sort reponse by date
-            response = response.sort(function(a,b) { return a.start.getTime() - b.start.getTime() })
+            response = response.sort(function(a,b) { if((a.start - b.start) > 0) { return 1} else {return -1} })
             // now we run our algorithm
-            console.log(response);
             var availableTimes = [];
             // we will keep track of two pointers. the first pointer marks the start of the working free period
             // the second keeps track of the end
+            // testing purposes
             var pointer1 = new Date();
             var pointer2 = new Date();
-            console.log(pointer1.toLocaleString(timezone));
-            console.log(pointer2.toLocaleString(timezone));
             for(var i = 0; i < response.length; i ++) {
-                console.log(response[i].summary);
                 var tempStart = response[i].start;
                 var tempEnd = response[i].end;
-                console.log(tempStart);
-                console.log(tempEnd);
                 // case in which s1 --- e1 (leeway) s2 ---e2
-                if(tempStart.getTime() > pointer2.getTime()) {
+                if(tempStart > pointer2) {
+                    console.log("called");
                     const pointer1Date = new Date(pointer2).toLocaleString(timezone);
                     const pointer2Date = new Date(tempStart).toLocaleString(timezone);
                     availableTimes.push([pointer1Date, pointer2Date]);
+                    changes = changes + 1;
                     pointer1 = tempStart;
                     pointer2 = tempEnd;
                 } else {
@@ -69,6 +99,11 @@ module.exports = (app) => {
                     } 
                     // case where s1 -- s2 -- e2 -- e1
                 }
+            }
+            if(changes === 0) {
+                const pointer1Date = new Date(pointer1).toLocaleString(timezone);
+                const pointer2Date = new Date(latestStartDate).toLocaleString(timezone);
+                availableTimes.push([pointer1Date, pointer2Date])
             }
             res.send(availableTimes)
         })

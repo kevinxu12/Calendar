@@ -5,6 +5,7 @@ class Home extends Component {
         return (
             <div>
                 <a href='/auth/google'>Test Google Calendar Sync </a>
+                <a href='/auth/google/nosync'>Test Google Calendar Without Sync </a>
             </div>
         )
     }

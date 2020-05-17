@@ -1,0 +1,12 @@
+.event{
+    margin-bottom: 5px;
+    position: absolute;
+    font-size: 10px;
+    padding: 7px 11px;
+    color: white;
+    border-radius: 10px;
+}
+
+.time {
+    color: white
+}

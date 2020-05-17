@@ -6,6 +6,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const cookieSession = require('cookie-session');
 const keys = require('./config/keys');
+var cors = require('cors');
 mongoose.connect(keys.mongoURI);
 mongoose.connection.on('open', function() {
     console.log("connected to mongo db");
@@ -18,7 +19,7 @@ app.use(cookieSession({
 }))
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(cors());
 
 
 const server = http.createServer(app);
