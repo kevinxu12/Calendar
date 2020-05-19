@@ -1,0 +1,42 @@
+.popup {
+    position: absolute;
+    left: 0%;
+    top: 0px;
+    width: 100%;
+    margin-right: -50%;
+    height: 210%;
+    z-index: 10;
+    padding: 5% 5%;
+    background-color: white;
+    color: black
+}
+
+.btn {
+    background-color: #1a73e8;
+    margin-left: 5%;
+}
+
+.close {
+    margin-left: 0px
+}
+
+#col1 {
+    column-width: 70%
+}
+
+#col2 {
+    column-width: 30%
+}
+
+.titleInput {
+    margin-left: 5%;
+    width:70%
+}
+
+.textEditor {
+    margin-top: 5%
+}
+
+.permissions {
+    margin-top: 5%
+}

@@ -63,7 +63,8 @@ passport.use(new GoogleStrategy({
                     description: event.description,
                     creator: event.creator,
                     owner: email,
-                    permissions: 'public'
+                    permissions: 'public',
+                    id: event.id
                 })
             })
             const eventResponse = await Event.insertMany(eventObjects);

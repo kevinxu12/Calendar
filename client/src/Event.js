@@ -1,6 +1,34 @@
 import React, { Component } from 'react'
 import './Event.css'
+import EventPopup from './EventPopup'
 class Event extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            renderPopup: false
+        }
+        this.onClick = this.onClick.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+    }
+    onClick() {
+        console.log("called onclick")
+        this.setState({
+            renderPopup: true
+        })
+    }
+
+    handleClose(e) {
+        console.log("called close of popup")
+        e.stopPropagation();
+        this.setState({
+            renderPopup: false
+        })
+    }
+    renderPopup(topString, info) {
+        if (this.state.renderPopup) {
+            return <EventPopup top = {topString} info = {info} handleClose = {this.handleClose}/>
+        }
+    }
     render() {
         // these should all be props;
         const props = this.props.data;
@@ -12,7 +40,6 @@ class Event extends Component {
         if (startTime > 12) {
             startTimeString = 'pm';
             startTimeString = (startTime - 12) + startTimeString;
-            console.log(startTimeString);
         } else {
             if (startTime < 1) {
                 startTimeString = 12 + startTime + startTimeString;
@@ -24,7 +51,6 @@ class Event extends Component {
         if (endTime > 12) {
             endTimeString = 'pm';
             endTimeString = (endTime - 12) + endTimeString;
-            console.log(endTimeString);
         } else {
             if (endTime < 1) {
                 endTimeString = 12 + endTime + endTimeString;
@@ -56,12 +82,16 @@ class Event extends Component {
             default:
                 backgroundColor = "#EF6C00"
         }
-
+        var obj = { top: topString, height: heightString, left: leftString, width: widthString, backgroundColor: backgroundColor }
 
         return (
-            <div className="event" style={{ top: topString, height: heightString, left: leftString, width: widthString, backgroundColor: backgroundColor }}>
-                {title}
-                <div className="time"> {startTimeString} - {endTimeString}</div>
+            <div onClick={this.onClick}>
+                <div
+                    className="event" style={obj}>
+                    {title}
+                    <div className="time"> {startTimeString} - {endTimeString}</div>
+                </div>
+                {this.renderPopup(top/2 + "px", this.props.data)}
             </div>
         )
     }

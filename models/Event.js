@@ -7,7 +7,8 @@ const eventSchema = new Schema({
     description: String,
     creator: String,
     owner: String,
-    permissions: { type: String, required: false, enum: ['public', 'restricted', 'private'] }
+    permissions: { type: String, required: false, enum: ['public', 'restricted', 'private'] },
+    id: String
 })
 
 var Event = mongoose.model('event', eventSchema);

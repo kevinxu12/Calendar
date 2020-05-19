@@ -19,10 +19,12 @@
     "googleapis": "^50.0.0",
     "http-proxy-middleware": "^1.0.3",
     "mongoose": "^5.9.13",
+    "node-cache": "^5.1.0",
     "nodemon": "^2.0.3",
     "passport": "^0.4.1",
     "passport-google-oauth2": "^0.2.0",
     "passport-google-oauth20": "^2.0.0",
+    "react-froala-wysiwyg": "^3.1.1-1",
     "socket.io": "^2.3.0"
   }
 }

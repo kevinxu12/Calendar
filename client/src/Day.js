@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './Day.css'
 import Event from './Event';
 import { hours, months } from './dates';
+import { testEventData } from './test/eventData'
 
 class Day extends Component {
     constructor(props) {
@@ -23,7 +24,8 @@ class Day extends Component {
         // data should be sorted coming in
         var columns = [];
         // lets put things into columns
-        var data = this.props.data.sort(function(a,b) { if((a.start - b.start) > 0) { return 1} else {return -1} });
+        var data = this.props.data.sort(function(a,b) { if((a.start - b.start) > 0) { return -1} else {return 1} });
+        console.log(data);
         data.forEach((event) => {
             var canFit = false;
             for (var i in columns) {
@@ -51,7 +53,11 @@ class Day extends Component {
                     startTime: event.startTime,
                     endTime: event.endTime,
                     columnNum: iterator,
-                    numColumns: numColumns
+                    numColumns: numColumns,
+                    description: event.description,
+                    creator: event.creator,
+                    _id: event._id,
+                    id: event.id
                 }
                 return <div><Event data={obj} /></div>
             })

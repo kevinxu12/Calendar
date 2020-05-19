@@ -1,29 +1,7 @@
 
-var helperFunctions = require('../services/calendarHelperFunctions');
 const mongoose = require('mongoose');
 const Event = mongoose.model('event');
 module.exports = (app) => {
-    app.get('/api/getAllCalendars', async (req, res) => {
-        console.log("called show all calendars");
-        var user = req.session.passport.user;
-        var obj = await helperFunctions.buildAuthClient(user.accessToken, user.refreshToken);
-        var calendar = obj.calendar;
-        var oauth2Client = obj.oauth2Client;
-        calendar.calendarList.list({ auth: oauth2Client }, function (err, response) {
-            res.send(response.data.items);
-        })
-    })
-
-    // app.get('/api/getAllEvents', async (req, res) => {
-    //     console.log("called get all events");
-    //     var obj = await helperFunctions.buildAuthClient(req);
-    //     var calendar = obj.calendar;
-    //     var oauth2Client = obj.oauth2Client;
-    //     helperFunctions.getAllEvents(calendar, oauth2Client, function (events) {
-    //         res.send(events);
-    //     })
-    // })
-
 
     // requires {date: date object}
     // takes email from session
@@ -31,10 +9,9 @@ module.exports = (app) => {
     app.post('/api/getAllEventsForDate', async (req, res) => {
         console.log("calling get all events for date");
         var startdate = new Date(req.body.startdate);
-        //var startdate = new Date(2020, 4, 15);
         var enddate = new Date(req.body.startdate);
         enddate.setDate(enddate.getDate() + 1);
-        var email = req.session.passport.user.profile.emails[0].value;
+        var email = req.user.emails[0].value;
         //var email = 'xukevinwork@gmail.com'
         Event.find({owner: email, start: {$lt: enddate}, end: {$gt: startdate}}, function (err, response) {
             if(err) {
@@ -54,6 +31,21 @@ module.exports = (app) => {
             }
         })
     })
+
+    // event for updating an existing calendar event
+    app.post('/api/updateEvent', async (req, res) => {
+        var calendarId = req.body.calendarId;
+        // part 1 is updating mongo
+
+        // part 2 is updating google calendar. use patch
+    })
+
+    // take advantage of mongo smart search for Events
+    app.post('/api/smartSearch', async (req, res) => {
+
+    }); 
+
+    
     // require a query 
     // ?range=week
     // ?timezone=en-us

@@ -40,12 +40,14 @@ module.exports = {
                 const end = entry.end.dateTime;
                 const description = entry.description;
                 const creator = entry.creator.email;
+                const id = entry.id;
                 return {
                     summary,
                     start,
                     end,
                     description,
-                    creator
+                    creator,
+                    id
                 }
             })
             callback(calendarList);
