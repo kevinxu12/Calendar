@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import axios from 'axios';
-import Calendar from './Calendar';
-import Day from './Day';
+import Calendar from './Calendar/Calendar';
+import Day from './Calendar/Day';
 import './Dashboard.css';
-import { months } from './dates';
-
+import { months } from './Constant/dates';
+import Filters from './Filter/filter';
 class Dashboard extends Component {
     // we should store events in state once we have fetched them
    
@@ -18,6 +18,7 @@ class Dashboard extends Component {
             monthNumber: 0
         }
         this.handleSelectDay = this.handleSelectDay.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
     }
     // refactor this code later 
     // this code hsould default load current day events
@@ -36,6 +37,7 @@ class Dashboard extends Component {
                 creator: entry.creator,
                 owner: entry.owner,
                 _id: entry._id,
+                permissions: entry.permissions,
                 id: entry.id
     
             }
@@ -59,6 +61,12 @@ class Dashboard extends Component {
         this.helperStateUpdater(response, day, monthNumber, year);
     }
 
+    async handleSearch(searchKeyWords) {
+        console.log("handling smart search");
+        const response = await axios.post('/api/smartSearch', { searchString: searchKeyWords, startdate: new Date(this.state.year, this.state.monthNumber, this.state.day)});
+        this.helperStateUpdater(response, this.state.day, this.state.monthNumber, this.state.year);
+    }
+
     renderDayView() {
         console.log("rendered day view");
         return <Day 
@@ -79,6 +87,9 @@ class Dashboard extends Component {
                 <div className = "day-view">
                 {this.renderDayView()}
                 </div>
+                <div className = "filters">
+                    <Filters search = {this.handleSearch}/>
+                </div> 
             </div>
         )
     }

@@ -7,7 +7,7 @@ import {
 
 import Home from './Home';
 import Dashboard from './Dashboard';
-import Day from './Day';
+import Day from './Calendar/Day';
 function App() {
   return (
     <BrowserRouter>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './Calendar.css'
-import { months, weekdays} from './dates';
+import { months, weekdays} from './../Constant/dates';
 class Calendar extends Component {
     constructor(props) {
         super(props);

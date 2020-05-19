@@ -11,7 +11,7 @@ module.exports = (app) => {
         var startdate = new Date(req.body.startdate);
         var enddate = new Date(req.body.startdate);
         enddate.setDate(enddate.getDate() + 1);
-        var email = req.user.emails[0].value;
+        var email = req.user.profile.emails[0].value;
         //var email = 'xukevinwork@gmail.com'
         Event.find({owner: email, start: {$lt: enddate}, end: {$gt: startdate}}, function (err, response) {
             if(err) {
@@ -35,14 +35,24 @@ module.exports = (app) => {
     // event for updating an existing calendar event
     app.post('/api/updateEvent', async (req, res) => {
         var calendarId = req.body.calendarId;
+        var updateJSON = req.body.updateObject;
         // part 1 is updating mongo
-
+        const response = await Event.update({id: calendarId}, { $set: updateJSON});
+        console.log(response);
         // part 2 is updating google calendar. use patch
+
+        res.end();
     })
 
     // take advantage of mongo smart search for Events
     app.post('/api/smartSearch', async (req, res) => {
-
+        var testBody = req.body.searchString;
+        var startdate = new Date(req.body.startdate);
+        var enddate = new Date(req.body.startdate);
+        enddate.setDate(enddate.getDate() + 1);
+        var email = req.user.profile.emails[0].value;
+        const response = await Event.find({owner: email, start: {$lt: enddate}, end: {$gt: startdate}, $text: {$search: testBody}});
+        res.send(response);
     }); 
 
     

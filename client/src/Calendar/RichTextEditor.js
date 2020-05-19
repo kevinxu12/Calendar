@@ -3,7 +3,6 @@ import 'froala-editor/css/froala_editor.pkgd.min.css';
 
 import FroalaEditorComponent from 'react-froala-wysiwyg';
 import React from 'react';
-import { callbackify } from 'util';
 const config = {
     charCounterCount: false
 }

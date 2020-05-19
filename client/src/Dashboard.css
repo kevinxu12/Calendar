@@ -4,7 +4,7 @@
     margin-left: 5%; 
     width: 45%;
     position: absolute;
-    height: 75%;
+    height: 100%;
     overflow-x: hidden; 
     overflow-y: auto;
     margin: 20px;
@@ -14,4 +14,12 @@
     display: inline-block;
     width: 50%;
     margin: 20px;
+}
+
+.filters {
+    width: 50%;
+    margin-left: 5%;
+    background-color: white;
+    margin: 20px;
+    padding: 3% 5%;
 }
