@@ -1,16 +1,17 @@
 # Calendar
 A personalized calendar side project. Technologies used: Passport/Google OAUTH, Node.js, express, react, MongoDB
-(last updated May 199, 2020)
-### Instructions to Run
-* Step 1:
-1. npm install
-2. cd client then npm install
-* Step 2:
-Call npm start in the home directory. 
-* Step 3 (Optional) 
-If errors with npm start, run node server.js. Open a new terminal window, cd into client and run npm start
-* Step 4: 
-Contact owner (Kevin Xu) for keys files. Files have not been pushed to git hub for security purposes. 
+(last updated May 19, 2020)
+### Features
+1. Live search of Events
+2. Filtering and Categorization of Existing Events
+3. Scheduling Events with Friends
+4. Live Feed
+
+### Instructions to Run for Development
+* Step 1: open one terminal window npm install. cd into client then npm install
+* Step 2: Call npm start in the home directory. 
+* Step 3 (Optional)  If errors with npm start, run node server.js. Open a new terminal window, cd into client and run npm start
+* Step 4: Contact owner (Kevin Xu) for local development keys files. Files have not been pushed to git hub for security purposes. 
 
 ### Instructions for Backend Development
 1. New routes should be put in a file in the routes folder. Remember to require the file in server.js
