@@ -8,29 +8,27 @@
     z-index: 10;
     padding: 5% 5%;
     background-color: white;
-    color: black
+    color: black;
+    white-space: pre-line;
 }
 
-.btn {
+#submit {
     background-color: #1a73e8;
-    margin-left: 5%;
+    margin-top: 10%;
 }
+
 
 .close {
-    margin-left: 0px
-}
-
-#col1 {
-    column-width: 70%
-}
-
-#col2 {
-    column-width: 30%
+    position: absolute;
+    top: 2%;
+    right: 5%;
 }
 
 .titleInput {
-    margin-left: 5%;
-    width:70%
+    margin-left: 10px;
+    width:30%;
+    position:absolute;
+    margin-top: -1px
 }
 
 .textEditor {
@@ -38,5 +36,9 @@
 }
 
 .permissions {
+    margin-top: 5%
+}
+
+.tags {
     margin-top: 5%
 }

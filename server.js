@@ -7,9 +7,7 @@ const socketIo = require("socket.io");
 const cookieSession = require('cookie-session');
 const keys = require('./config/keys');
 var cors = require('cors');
-const NodeCache = require( "node-cache" );
-const myCache = new NodeCache();
-mongoose.connect(keys.mongoURI);
+mongoose.connect(keys.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('open', function() {
     console.log("connected to mongo db");
 })
@@ -37,7 +35,7 @@ require('./services/passport');
 
 require('./routes/authRoutes')(app);
 require('./routes/calendarRoutes')(app);
-require('./routes/calendarGetRoutes')(app, myCache);
+require('./routes/calendarGetRoutes')(app);
 
 
 const port = process.env.PORT || 5000;

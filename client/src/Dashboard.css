@@ -1,25 +1,25 @@
 
 .day-view {
-    display: inline-block;
-    margin-left: 5%; 
-    width: 45%;
+    width: 47%;
     position: absolute;
     height: 100%;
+    display: inline-block;
+    margin-left: 10px; 
+    margin-top: 10px;
     overflow-x: hidden; 
     overflow-y: auto;
-    margin: 20px;
 }
 
 .calendar-view {
     display: inline-block;
     width: 50%;
-    margin: 20px;
+    margin-left: 20px;
+    margin-top: 10px;
 }
 
 .filters {
     width: 50%;
-    margin-left: 5%;
+    margin-left: 20px;
     background-color: white;
-    margin: 20px;
     padding: 3% 5%;
 }

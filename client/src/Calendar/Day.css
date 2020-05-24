@@ -1,9 +1,9 @@
-.day {
-    width: 100%;
+.day-container {
     margin-top: 0px;
     background-color: #ffffff;
 	-webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    width: 100%
 }
 .row { 
     width: 100%;
@@ -30,9 +30,9 @@
     margin-left: 9%;
     margin-top: -3%;
 }
-.date {
+.display-date {
     padding: 40px;
-    color: #C7BEBE;
+    color: #616161;
     height:10%;
     text-align: right;
     font-weight: normal;

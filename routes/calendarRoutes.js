@@ -11,34 +11,42 @@ module.exports = (app) => {
         var startdate = new Date(req.body.startdate);
         var enddate = new Date(req.body.startdate);
         enddate.setDate(enddate.getDate() + 1);
-        var email = req.user.profile.emails[0].value;
+        var email = req.user.profile._json.email 
+        //var email = req.user[0].email; 
         //var email = 'xukevinwork@gmail.com'
-        Event.find({owner: email, start: {$lt: enddate}, end: {$gt: startdate}}, function (err, response) {
-            if(err) {
-                res.end();
+        var response = req.session[req.body.startdate];
+        if (!response) {
+            console.log("not cached, fetching from mongo db");
+            response = await Event.find({ owner: email, start: { $lt: enddate }, end: { $gt: startdate } });
+            req.session[req.body.startdate] = response;
+        } else {
+            console.log("cached already, fetching from cache");
+        }
+
+
+        const editedResponse = response.map((event) => {
+            if (event.start < startdate) {
+                event.start = startdate;
             }
-            if(response) {
-                const editedResponse = response.map((event) => {
-                    if(event.start < startdate) {
-                        event.start = startdate;
-                    }
-                    if(event.end > enddate) {
-                        event.end = enddate;
-                    }
-                    return event;
-                })
-                res.send(editedResponse);
+            if (event.end > enddate) {
+                event.end = enddate;
             }
+            return event;
         })
+        res.send(editedResponse);
     })
+
 
     // event for updating an existing calendar event
     app.post('/api/updateEvent', async (req, res) => {
+        console.log("called update event");
         var calendarId = req.body.calendarId;
         var updateJSON = req.body.updateObject;
+        var startdate = req.body.startdate;
         // part 1 is updating mongo
-        const response = await Event.update({id: calendarId}, { $set: updateJSON});
-        console.log(response);
+        const response = await Event.updateOne({ id: calendarId }, { $set: updateJSON });
+        // reset cache
+        req.session[startdate] = null
         // part 2 is updating google calendar. use patch
 
         res.end();
@@ -50,31 +58,40 @@ module.exports = (app) => {
         var startdate = new Date(req.body.startdate);
         var enddate = new Date(req.body.startdate);
         enddate.setDate(enddate.getDate() + 1);
-        var email = req.user.profile.emails[0].value;
-        const response = await Event.find({owner: email, start: {$lt: enddate}, end: {$gt: startdate}, $text: {$search: testBody}});
+        var email = req.user.profile._json.email
+        //var email = req.user[0].email;
+        const response = await Event.find({ owner: email, start: { $lt: enddate }, end: { $gt: startdate }, $text: { $search: testBody } });
         res.send(response);
-    }); 
+    });
 
-    
+    // going to need a new helper function
+
+    function filterUnavailableTimes() {
+        // step 1 is to get all unavailable hours. It's going to come in as a date. But extract UTC hours and increment from where we are currently 
+        // step 2 for the entire week, let's convert these hours into UTC
+        // lets return all the events and add back into the response
+        // step 4: add a potential filter if say its unavailbility by work or something
+    }
     // require a query 
     // ?range=week
     // ?timezone=en-us
     //body = {email: [listofemails]}
     app.post('/api/getAvailableTimes', async (req, res) => {
-        // console.log('called get available times');
+         console.log('called get available times');
         // res.end();
         // in the future, we will have filters for buffer room
-        var emailList = req.email;
+        var emailList = req.body.email;
         var range = req.query.range;
         var timezone = req.query.timezone
         var latestStartDate = new Date();
-        if(range === "week") {
+        if (range === "week") {
             latestStartDate.setDate(latestStartDate.getDate() + 7);
         }
         var changes = 0;
-        Event.find({owner: {"$in": emailList}, start: { $lt: latestStartDate} }, function(err, response) {
+        var dateOption = {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit'};
+        Event.find({ owner: { $in: emailList }, start: { $lt: latestStartDate }, end: { $gt: new Date()} }, function (err, response) {
             // first we sort reponse by date
-            response = response.sort(function(a,b) { if((a.start - b.start) > 0) { return 1} else {return -1} })
+            response = response.sort(function (a, b) { if ((a.start - b.start) > 0) { return 1 } else { return -1 } })
             // now we run our algorithm
             var availableTimes = [];
             // we will keep track of two pointers. the first pointer marks the start of the working free period
@@ -82,31 +99,40 @@ module.exports = (app) => {
             // testing purposes
             var pointer1 = new Date();
             var pointer2 = new Date();
-            for(var i = 0; i < response.length; i ++) {
+            for (var i = 0; i < response.length; i++) {
                 var tempStart = response[i].start;
                 var tempEnd = response[i].end;
                 // case in which s1 --- e1 (leeway) s2 ---e2
-                if(tempStart > pointer2) {
+                if (tempStart > pointer2) {
                     console.log("called");
-                    const pointer1Date = new Date(pointer2).toLocaleString(timezone);
-                    const pointer2Date = new Date(tempStart).toLocaleString(timezone);
+                    // add some logic involving when everyone is busy
+                    // pointer 2 --- tempstart 
+                    // c1) if a start < tempStart but an end > tempStart, set pointer2Date to be the start
+                    // c1 if a start < pointer2 but end > pointer22 set pointer1date to be end
+                    // if a start and end encompasses don't include this
+                    //const pointer1Date = new Date(pointer2).toLocaleString([], dateOption);
+                    //const pointer2Date = new Date(tempStart).toLocaleString([], dateOption);
+                     const pointer1Date = new Date(pointer2)
+                    const pointer2Date = new Date(tempStart)
                     availableTimes.push([pointer1Date, pointer2Date]);
                     changes = changes + 1;
                     pointer1 = tempStart;
                     pointer2 = tempEnd;
                 } else {
-                // case where s1 --- s2 -- e1 -- e2
-                    if(tempStart > pointer1 ) {
+                    // case where s1 --- s2 -- e1 -- e2
+                    if (tempStart > pointer1) {
                         pointer2 = tempEnd;
-                    } 
+                    }
                     // case where s1 -- s2 -- e2 -- e1
                 }
             }
-            if(changes === 0) {
-                const pointer1Date = new Date(pointer1).toLocaleString(timezone);
-                const pointer2Date = new Date(latestStartDate).toLocaleString(timezone);
-                availableTimes.push([pointer1Date, pointer2Date])
-            }
+
+            //const pointer1Date = new Date(pointer2).toLocaleString(timezone, dateOption);
+            //const pointer2Date = new Date(latestStartDate).toLocaleString(timezone, dateOption);
+            const pointer1Date = new Date(pointer2);
+            const pointer2Date = new Date(latestStartDate);
+            availableTimes.push([pointer1Date, pointer2Date])
+            console.log(availableTimes);
             res.send(availableTimes)
         })
     })

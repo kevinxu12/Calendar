@@ -21,7 +21,7 @@ module.exports = {
         return {calendar, oauth2Client};
     },
 
-    getAllEvents: function getAllEvents(calendar, oauth2Client, callback) {
+    getAllEvents: function getAllEvents(calendar, oauth2Client, callback, calendarId) {
         console.log("getting all events helper function called");
         console.log((new Date()).toISOString());
         calendar.events.list({

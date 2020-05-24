@@ -2,21 +2,24 @@ import React from 'react';
 import {
   BrowserRouter,
   Route,
-  Switch,
 } from 'react-router-dom';
 
-import Home from './Home';
-import Dashboard from './Dashboard';
-import Day from './Calendar/Day';
+import Home from './TempHomePage';
+import Header from './Header';
+import Dashboard from './Dashboard'
+// claudia's home page
+import HomePage from './HomePage'
+import Scheduling from './Scheduling/SchedulingHome'
+import {homeRoute, dashboardRoute, schedulingRoute} from './Constant/routes';
 function App() {
   return (
     <BrowserRouter>
       <div>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/dashboard" component={Dashboard} />
-          <Route path="/dashboard/day" component = {Day} />
-        </Switch>
+          <Header/>
+          <Route exact path={homeRoute} component={Home} />
+          <Route exact path={dashboardRoute} component={Dashboard} />
+          <Route path = "/homepage" component = {HomePage}/>
+          <Route path = {schedulingRoute} component = {Scheduling}/>
       </div>
     </BrowserRouter>
   );

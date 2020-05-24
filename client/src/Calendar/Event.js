@@ -1,43 +1,64 @@
 import React, { Component } from 'react'
 import './Event.css'
-import EventPopup from './EventPopup'
+import EventPopup from './Popup/EventPopup'
 class Event extends Component {
     constructor(props) {
         super(props);
+       
         this.state = {
-            renderPopup: false
+            renderPopup: false,
+            tag: this.props.data.tag,
+            title: this.props.data.title
         }
-        this.onClick = this.onClick.bind(this);
-        this.handleClose = this.handleClose.bind(this);
+        this.openPopup = this.openPopup.bind(this);
+        this.closePopup = this.closePopup.bind(this);
+        this.updateEvent = this.updateEvent.bind(this);
+    
     }
-    onClick() {
-        console.log("called onclick")
+    // on click opens the popup
+    openPopup(e) {
+        e.stopPropagation();
+        console.log("open popup")
         this.setState({
             renderPopup: true
         })
     }
 
-    handleClose(e) {
-        console.log("called close of popup")
+    // closes the pop up
+    closePopup(e) {
         e.stopPropagation();
+        console.log("called close of popup")
         this.setState({
             renderPopup: false
         })
     }
-    renderPopup(topString, info) {
+
+    // updates the event based off of popup changes
+    updateEvent(obj) {
+        console.log('called update event');
+        if (obj.title) {
+            this.setState({ title: obj.title })
+        };
+        if (obj.tag) {
+            this.setState({ tag: obj.tag })
+        }
+        this.closePopup();
+    }
+    renderPopup(info) {
         if (this.state.renderPopup) {
-            return <EventPopup top = {topString} info = {info} handleClose = {this.handleClose}/>
+            return <EventPopup info={{...info, tag: this.state.tag, title: this.state.title}} handleClose={this.closePopup} updateEvent={this.updateEvent} />
+        } else {
+            return this.renderEvent();
         }
     }
-    render() {
-        // these should all be props;
+    renderEvent() {
         const props = this.props.data;
-        const title = props.title;
         const startTime = props.startTime;
         const endTime = props.endTime;
-
+        const numColumns = props.numColumns;
+        const columnNum = props.columnNum;
         var startTimeString = 'am';
-        if (startTime > 12) {
+        if (startTime >= 12) {
             startTimeString = 'pm';
             startTimeString = (startTime - 12) + startTimeString;
         } else {
@@ -48,7 +69,7 @@ class Event extends Component {
             }
         }
         var endTimeString = 'am';
-        if (endTime > 12) {
+        if (endTime >= 12) {
             endTimeString = 'pm';
             endTimeString = (endTime - 12) + endTimeString;
         } else {
@@ -66,32 +87,35 @@ class Event extends Component {
         const topString = top + "px";
         const height = 45 + 50 * (endTime - startTime - 1);
         const heightString = height + "px"
-        const width = (85 / this.props.data.numColumns);
+        const width = (85 / numColumns);
         const widthString = width + "%";
         const leftBaseLineStart = 9
-        const left = leftBaseLineStart + (this.props.data.columnNum - 1) * width;
+        const left = leftBaseLineStart + (columnNum - 1) * width;
         const leftString = left + "%";
         var backgroundColor = "";
-        switch (this.props.data.columnNum) {
-            case 1:
-                backgroundColor = "#039BE5"
-                break;
-            case 2:
-                backgroundColor = "#7CB342"
+        switch (this.state.tag) {
+            case "Work":
+                backgroundColor = "#EF6C00"
                 break;
             default:
-                backgroundColor = "#EF6C00"
+                backgroundColor = "#039BE5"
+
         }
         var obj = { top: topString, height: heightString, left: leftString, width: widthString, backgroundColor: backgroundColor }
+        return (
+            <div
+                className="event" style={obj}>
+                {this.state.title}
+                <div className="time"> {startTimeString} - {endTimeString}</div>
+            </div>
+        );
+    }
+    render() {
+        // these should all be props;
 
         return (
-            <div onClick={this.onClick}>
-                <div
-                    className="event" style={obj}>
-                    {title}
-                    <div className="time"> {startTimeString} - {endTimeString}</div>
-                </div>
-                {this.renderPopup(top/2 + "px", this.props.data)}
+            <div onClick={this.openPopup}>
+                {this.renderPopup(this.props.data)}
             </div>
         )
     }

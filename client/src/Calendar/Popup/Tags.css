@@ -1,0 +1,23 @@
+.btn {
+    padding: 5px 5px;
+    margin-left: 5px;
+    width: 20%;
+    border-color: transparent
+}
+
+#leisure{
+    background-color: #9E69AF!important
+}
+
+#work{
+    background-color: #EF6C00!important
+}
+
+#social{
+    background-color: #7CB342!important
+}
+
+#default {
+    background-color:  #039BE5!important;
+    color: white
+}

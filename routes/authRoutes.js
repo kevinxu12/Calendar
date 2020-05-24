@@ -19,6 +19,8 @@ module.exports = (app) => {
         }
         )
     );
+    // (CHANGES NEEEDED) callback needs to be changed in production
+    // use Process.ENV
     app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
         console.log("called callback");
         res.redirect('http://localhost:3000/dashboard');
@@ -26,5 +28,12 @@ module.exports = (app) => {
     app.get('/api/currentUser', (req, res) => {
         console.log(req.user);
         res.send(req.user);
+    })
+
+    app.get('/api/logout', (req, res) => {
+        console.log("logging out");
+        req.session = null;
+        req.user = null;
+        res.end();
     })
 }

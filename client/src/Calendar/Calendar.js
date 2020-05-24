@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './Calendar.css'
-import { months, weekdays} from './../Constant/dates';
+import { months, weekdays, month_abbreviations} from './../Constant/dates';
 class Calendar extends Component {
     constructor(props) {
         super(props);
@@ -25,6 +25,7 @@ class Calendar extends Component {
                 case 27:
                     _addClass = ' className="event"';
                     break;
+                default:
             }
             const value = { _i } + { _addClass }
             result.push(<li key={_i}><div title={_i} data-value={value}>{_i}</div></li>);
@@ -42,6 +43,7 @@ class Calendar extends Component {
         return result;
 
     }
+    // onclick month is not done yet
     render() {
         const date = new Date()
         const day = date.getDay();
@@ -62,7 +64,8 @@ class Calendar extends Component {
                         <h2 className="year">{year}</h2>
                         <ul className="months" onClick = {(e) => {
                             var month = e.target.innerHTML;
-                            this.setState({month: month});
+                            month = month_abbreviations[month];
+                            this.setState({month});
                         }}>
                             {this.renderMonths()}
                         </ul>

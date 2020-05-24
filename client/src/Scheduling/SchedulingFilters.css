@@ -1,0 +1,14 @@
+#close {
+    position: relative;
+    font-size: 1rem;
+    margin-left: 10px;
+    color: white
+}
+
+.select-tag {
+    margin-right: 10px;
+}
+
+.selected-container {
+    margin-top: 10px
+}

@@ -1,0 +1,30 @@
+.item-container {
+    height: 100px;
+    width: 80%;
+    border-color: #C7BEBE;
+    border-style: solid;
+    border-width: 1px;;
+    margin-top: -1px;
+    margin-left: -1px;
+    position: relative
+}
+
+.schedule-btn {
+    padding: 5px 5px;
+    background-color: #6c757d;
+    margin-left: 10px
+}
+
+.time-display {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 16px
+}
+
+.tag {
+    margin: 10px
+}
+
+.users-badge {
+    margin-left: 10px;
+}

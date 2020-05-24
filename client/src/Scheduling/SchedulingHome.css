@@ -1,0 +1,18 @@
+.friends-schedule-filter {
+    display: inline-block;
+    width: 40%;
+    height: 100%;
+    background-color: white;
+    margin: 10px
+   
+}
+
+.scheduling-day-view {
+    display: inline-block;
+    width: 57%;
+    overflow-x: hidden; 
+    overflow-y: auto;
+    position: absolute;
+    margin: 10px
+   
+}

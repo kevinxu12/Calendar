@@ -3,7 +3,6 @@ var GoogleStrategy = require('passport-google-oauth20').Strategy;
 const keys = require('../config/keys');
 var callbackURL = '/auth/google/callback'
 
-
 const mongoose = require('mongoose')
 const User = mongoose.model('user');
 const Event = mongoose.model('event');
@@ -13,9 +12,21 @@ passport.serializeUser((user, done) => {
     done(null, user);
 })
 
-passport.deserializeUser((id, done) => {
-    //console.log(id);
+// want to minimize calls to the db so will not store the user in req.user
+passport.deserializeUser(async (id, done) => {
+    console.log("deserializing user");
     done(null, id);
+    // console.log("called deserialize user");
+    // var email = id.profile._json.email;
+    // if(email) {
+    //     var response = await User.find({email});
+    //     if(response) {
+    //         done(null, response);
+    //     } else {
+    //         console.log("couldnt find user");
+    //         done(null, id);
+    //     }
+    // }
 })
 
 // need to fill in
@@ -64,6 +75,7 @@ passport.use(new GoogleStrategy({
                     creator: event.creator,
                     owner: email,
                     permissions: 'public',
+                    tag: 'Default',
                     id: event.id
                 })
             })
@@ -75,7 +87,7 @@ passport.use(new GoogleStrategy({
             }
 
             done(null, { accessToken, refreshToken, profile })
-        })
+        }, email)
     } else {
         done(null, { accessToken, refreshToken, profile }); 
     }
