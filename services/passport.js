@@ -41,7 +41,7 @@ passport.use(new GoogleStrategy({
     const fullName = profile.name.givenName + " " + profile.name.familyName;
     // this could create a bug not sure
     const email = profile.emails[0].value
-
+    var existingSyncToken = '';
     // check if user with email exists, if not create a new user
     const existingUser = await User.findOne({ email: email });
     if (!existingUser) {
@@ -49,24 +49,34 @@ passport.use(new GoogleStrategy({
         const newUser = new User({
             email: email,
             name: fullName,
-            friends: []
+            friends: [],
+            busyTimes: [],
+            syncToken: ''
         })
         const savingResponse = await newUser.save();
         if (savingResponse) {
             console.log("New User successfully created");
         }
+    } else {
+        existingSyncToken = existingUser.syncToken;
     }
     //next part of code syncs events
-    console.log(req.query.state);
     if (req.query.state !== "nosync") {
-        const deleteResponse = await Event.deleteMany({ owner: email });
-        console.log("wiped events");
+        // another form of logic is deleting everyting and re-entering
+        //known bug large amounts of changes will trigger a pageToken that will fail
 
         var obj = await helperFunctions.buildAuthClient(accessToken, refreshToken);
         var calendar = obj.calendar;
         var oauth2Client = obj.oauth2Client;
-        helperFunctions.getAllEvents(calendar, oauth2Client, async function (events) {
-            const eventObjects = events.map((event) => {
+        helperFunctions.getAllEventsTest(calendar, oauth2Client, async function (addedAndUpdatedEvents, deletedEvents, syncToken) {
+            if(syncToken) { 
+                const syncResponse = await User.findOneAndUpdate({email: email}, {$set: {"syncToken": syncToken}});
+            }
+            // logic for updates and adding 
+            // deals with updates
+            var updatedAddedIdList = addedAndUpdatedEvents.map((event) => { return event.id});
+            Event.deleteMany({id: {$in: updatedAddedIdList} });
+            const eventObjects = addedAndUpdatedEvents.map((event) => {
                 return new Event({
                     summary: event.summary,
                     start: event.start,
@@ -80,14 +90,16 @@ passport.use(new GoogleStrategy({
                 })
             })
             const eventResponse = await Event.insertMany(eventObjects);
-            if (eventResponse) {
-                console.log("Added events for " + fullName);
-            } else {
-                console.log("Error adding events into db")
-            }
+            console.log(eventResponse);
+
+            // logic for deletes
+            var deletedIdList = deletedEvents.map((event) => { return event.id});
+            const deleteResponse = await Event.deleteMany({id: {$in: deletedIdList}});
+            console.log(deleteResponse);
+
 
             done(null, { accessToken, refreshToken, profile })
-        }, email)
+        }, email, existingSyncToken);
     } else {
         done(null, { accessToken, refreshToken, profile }); 
     }

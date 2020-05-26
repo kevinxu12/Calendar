@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import './Calendar.css'
 import { months, weekdays, month_abbreviations} from './../Constant/dates';
+import { connect } from 'react-redux';
 class Calendar extends Component {
     constructor(props) {
         super(props);
@@ -45,17 +46,18 @@ class Calendar extends Component {
     }
     // onclick month is not done yet
     render() {
-        const date = new Date()
-        const day = date.getDay();
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const dayOfMonth = date.getDate();
+        var dateInformation = this.props.date;
+        const year = dateInformation.year;
+        const month = dateInformation.monthNumber;
+        const day= dateInformation.day;
+        const date = new Date(year, month, day);
+        const dayOfWeek = date.getDate();
         return (
             <div className="calendar">
 
                 <div className="col leftCol">
                     <div className="content">
-                        <h1 className="date">{weekdays[day]}<span>{months[month]} {dayOfMonth}th</span></h1>
+                        <h1 className="date">{weekdays[dayOfWeek]}<span>{months[month]} {day}th</span></h1>
                     </div>
                 </div>
 
@@ -86,5 +88,9 @@ class Calendar extends Component {
         )
     }
 }
-
-export default Calendar;
+function mapStateToProps(state) {
+    return { 
+        date: state.dateInformation
+    }
+}
+export default connect(mapStateToProps, null)(Calendar);

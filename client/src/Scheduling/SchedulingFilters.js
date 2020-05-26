@@ -15,6 +15,7 @@ class SchedulingFilters extends Component {
         this.addFriend = this.addFriend.bind(this);
         this.deleteFriend = this.deleteFriend.bind(this);
     }
+    // this should all be changed with actual code
     componentDidMount() {
         var obj = {};
         var friendsOptions = [];

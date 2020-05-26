@@ -110,8 +110,6 @@ module.exports = (app) => {
                     // c1) if a start < tempStart but an end > tempStart, set pointer2Date to be the start
                     // c1 if a start < pointer2 but end > pointer22 set pointer1date to be end
                     // if a start and end encompasses don't include this
-                    //const pointer1Date = new Date(pointer2).toLocaleString([], dateOption);
-                    //const pointer2Date = new Date(tempStart).toLocaleString([], dateOption);
                      const pointer1Date = new Date(pointer2)
                     const pointer2Date = new Date(tempStart)
                     availableTimes.push([pointer1Date, pointer2Date]);
@@ -127,8 +125,6 @@ module.exports = (app) => {
                 }
             }
 
-            //const pointer1Date = new Date(pointer2).toLocaleString(timezone, dateOption);
-            //const pointer2Date = new Date(latestStartDate).toLocaleString(timezone, dateOption);
             const pointer1Date = new Date(pointer2);
             const pointer2Date = new Date(latestStartDate);
             availableTimes.push([pointer1Date, pointer2Date])

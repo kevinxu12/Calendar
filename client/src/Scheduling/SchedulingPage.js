@@ -17,42 +17,51 @@ class SchedulingPage extends Component {
             friends: testFriends,
             tag: 'Work',
             displayCreatedEvent: 0,
-            currentEventData: {}
+            currentEventDateData: {}
         }
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.onCreateEvent = this.onCreateEvent.bind(this);
-        this.back = this.back.bind(this);
+        this.handleFindTimes = this.handleFindTimes.bind(this);
+        this.onSchedule = this.onSchedule.bind(this);
+        this.onBack = this.onBack.bind(this);
     }
     renderSuggestedEvents() {
         // if 0 -> show all suggested time options 
         if (this.state.displayCreatedEvent === 0) {
             return this.state.data.map((entry) => {
-                return <SchedulingEvent createEvent={this.onCreateEvent} data={entry} friends={this.state.friends} tag={this.state.tag} />
+                return <SchedulingEvent createEvent={this.onSchedule} data={entry} friends={this.state.friends} tag={this.state.tag} />
             })
         // if 1 open up a page where you can input stuff
         // if 2, pop up a link where you can add yourself to an event
         } else if (this.state.displayCreatedEvent === 2) {
+            // temporary link feature
             var data = {
                 title: 'test',
-                start: this.state.currentEventData.start,
-                end: this.state.currentEventData.end
+                start: this.state.currentEventDateData.start,
+                end: this.state.currentEventDateData.end
             }
             var link = generateLinkURL(data);
-            return <div><a href={link} >  Link to the Event </a><Button onClick={this.back}> Back </Button></div>
+            return <div><a href={link} >  Link to the Event </a><Button onClick={this.onBack}> Back </Button></div>
         }
     }
-    back() {
+    // when the user presses back button
+    onBack() {
         this.setState({displayCreatedEvent: 0});
     }
+    // when user ccreates an event. This is where we do display currrent event 2
+    // logic below for sending a request to insert 
+    //axios.post('/createEvent', testData);
+    onSubmit() {
 
-    onCreateEvent(data) {
+    }
+    // when the user presses schedule. This should be changed to displayCreatedEvent 1
+    onSchedule(data) {
         console.log(data);
-        this.setState({ displayCreatedEvent: 2, currentEventData: data });
+        this.setState({ displayCreatedEvent: 2, currentEventDateData: data });
+        
     }
 
 
     // method called on "find time"
-    async handleSubmit(rawNamesList, friendsMap) {
+    async handleFindTimes(rawNamesList, friendsMap) {
         console.log("finding times, submitted");
 
         // for now hardcoded but should be fetched
@@ -81,7 +90,7 @@ class SchedulingPage extends Component {
         return (
             <div>
                 <div className="schedule-page-selectors">
-                    <SchedulingFilters handleSubmit={this.handleSubmit} />
+                    <SchedulingFilters handleSubmit={this.handleFindTimes} />
                 </div>
                 <div className="schedule-page-holder">
                     <h5> Suggested Times </h5>

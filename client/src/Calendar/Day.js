@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import './Day.css'
 import Event from './Event';
-import { hours, months } from './../Constant/dates';
+import { hours } from './../Constant/dates';
 import { testEventData } from './../test/eventData';
+import { connect } from 'react-redux';
+
 class Day extends Component {
     constructor(props) {
         super(props);
@@ -23,7 +25,7 @@ class Day extends Component {
         // data should be sorted coming in
         var columns = [];
         // lets put things into columns
-        var data = this.props.data.sort(function(a,b) { if((a.start - b.start) > 0) { return -1} else {return 1} });
+        var data = this.props.todaysEvents.sort(function(a,b) { if((a.start - b.start) > 0) { return -1} else {return 1} });
         //console.log(data);
         //data = testEventData;
         data.forEach((event) => {
@@ -56,14 +58,16 @@ class Day extends Component {
         });
     }
     render() {
-        const date = new Date()
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const dayOfMonth = date.getDate();
-        var currentDate = this.props.month + " " + this.props.day + "th" + " " + this.props.year;
-        var currentDay = new Date(this.props.year, this.props.monthNumber, this.props.day);
-        if(currentDate === " th ") { currentDay = new Date(year, month, dayOfMonth) }
-        if(currentDate === " th ") { currentDate = months[month] + " " + dayOfMonth + "th " + year}
+        // const date = new Date()
+        // const year = date.getFullYear();
+        // const month = date.getMonth();
+        // const dayOfMonth = date.getDate();
+        var dateInformation = this.props.date;
+        console.log(dateInformation);
+        var currentDate = dateInformation.month + " " + dateInformation.day + "th" + " " + dateInformation.year;
+        var currentDay = new Date(dateInformation.year, dateInformation.monthNumber, dateInformation.day);
+        // if(currentDate === " th ") { currentDay = new Date(year, month, dayOfMonth) }
+        // if(currentDate === " th ") { currentDate = months[month] + " " + dayOfMonth + "th " + year}
         
         return (
             <div className="day-container">
@@ -81,5 +85,7 @@ class Day extends Component {
         );
     }
 }
-
-export default Day;
+function mapStateToProps (state)  {
+    return { todaysEvents: state.todaysEvents, date: state.dateInformation}
+}
+export default connect(mapStateToProps, null)(Day);

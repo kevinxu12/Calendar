@@ -23,6 +23,9 @@ module.exports = (app) => {
     // use Process.ENV
     app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
         console.log("called callback");
+        if(process.env.NODE_ENV === "production") {
+            res.redirect('/dashboard');
+        }
         res.redirect('http://localhost:3000/dashboard');
     })
     app.get('/api/currentUser', (req, res) => {

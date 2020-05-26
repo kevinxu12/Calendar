@@ -35,7 +35,7 @@ require('./services/passport');
 
 require('./routes/authRoutes')(app);
 require('./routes/calendarRoutes')(app);
-require('./routes/calendarGetRoutes')(app);
+require('./routes/calendarAPIRoutes')(app);
 
 
 const port = process.env.PORT || 5000;
