@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './Day.css'
 import Event from './Event';
 import { hours } from './../Constant/dates';
-import { testEventData } from './../test/eventData';
+// import { testEventData } from './../test/eventData';
 import { connect } from 'react-redux';
 
 class Day extends Component {
@@ -14,7 +14,7 @@ class Day extends Component {
     }
     renderHours() {
         return hours.map((time) => {
-            return <div className="row" key={time}>
+            return <div className="hour-row" key={time}>
                 <div className="time-row" >{time}</div>
                 <hr className="line"></hr>
             </div>
@@ -25,15 +25,20 @@ class Day extends Component {
         // data should be sorted coming in
         var columns = [];
         // lets put things into columns
-        var data = this.props.todaysEvents.sort(function(a,b) { if((a.start - b.start) > 0) { return -1} else {return 1} });
+        var data = this.props.todaysEvents;
         //console.log(data);
         //data = testEventData;
-        data.forEach((event) => {
+        data.sort(function(a,b) { return a.start - b.start});
+        // s1 -- e1 s2 -- e2
+        // s1 -- s2 -- e2 -- e1
+        // console.log(data);
+        for(const index in data) {
+            const event = data[index];
             var canFit = false;
             for (var i in columns) {
                 var column = columns[i];
                 var lastEntry = column[column.length - 1];
-                if (event.startTime > lastEntry.endTime) {
+                if (!(event.startTime <= lastEntry.endTime && lastEntry.startTime >= event.endTime)) {
                     column.push(event);
                     canFit = true;
                     break;
@@ -42,7 +47,7 @@ class Day extends Component {
             if(!canFit) {
                 columns.push([event]);
             }
-        })
+        }
         var iterator = 0;
         // for each column
         var numColumns = columns.length;
@@ -53,7 +58,7 @@ class Day extends Component {
                 var obj = {
                     ...event, numColumns: numColumns, columnNum: iterator, currentDay: currentDay
                 }
-                return <div><Event data={obj} /></div>
+                return <div><Event key = {iterator} data={obj} /></div>
             })
         });
     }

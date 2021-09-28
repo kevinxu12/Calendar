@@ -6,10 +6,10 @@ import Tags from '../Calendar/Popup/Tags';
 class PersonalFilters extends Component {
     constructor(props) {
         super(props);
-        this.textInput = React.createRef();
         this.handleTagClicked = this.handleTagClicked.bind(this);
         this.state = {
-            tag: ''
+            tag: '',
+            textInput: ''
         }
     }
     handleTagClicked(e) {
@@ -17,7 +17,7 @@ class PersonalFilters extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        if(this.state.tag !== nextState.tag) {
+        if(this.state.tag !== nextState.tag || this.state.textInput !== nextState.textInput) {
              return false
         }
         return true
@@ -29,14 +29,15 @@ class PersonalFilters extends Component {
                 <h1> Filters </h1>
                 <Form onSubmit={(e) => {
                     e.preventDefault();
-                    var searchKeyWord = this.textInput.current.value;
+                    var searchKeyWord = this.state.textInput;
+                    console.log(searchKeyWord);
                     var tag = this.state.tag;
                     this.props.search(searchKeyWord, tag);
                     this.setState({tag: ''})
                 }}>
                     <Form.Group className = "form-group">
                         <Form.Label>Keyword Search</Form.Label>
-                        <Form.Control ref={this.textInput}  placeholder="Search by keywords" />
+                        <Form.Control onChange = {(e) => {this.setState({textInput: e.target.value})}} placeholder="Search by keywords" />
                         <Form.Text className="text-muted">
                             We'll never share your email with anyone else.
                         </Form.Text>

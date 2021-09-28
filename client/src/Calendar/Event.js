@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import './Event.css'
 import EventPopup from './Popup/EventPopup'
+import { connect } from 'react-redux'; 
+import { updateEvent } from '../actions'
 class Event extends Component {
     constructor(props) {
         super(props);
@@ -26,7 +28,6 @@ class Event extends Component {
 
     // closes the pop up
     closePopup(e) {
-        e.stopPropagation();
         console.log("called close of popup")
         this.setState({
             renderPopup: false
@@ -36,12 +37,15 @@ class Event extends Component {
     // updates the event based off of popup changes
     updateEvent(obj) {
         console.log('called update event');
+        var newObj = obj;
         if (obj.title) {
             this.setState({ title: obj.title })
         };
         if (obj.tag) {
             this.setState({ tag: obj.tag })
         }
+        newObj.id = this.props.data.id;
+        this.props.updateEvent(newObj);
         this.closePopup();
     }
     renderPopup(info) {
@@ -94,8 +98,11 @@ class Event extends Component {
         const leftString = left + "%";
         var backgroundColor = "";
         switch (this.state.tag) {
-            case "Work":
+            case "work":
                 backgroundColor = "#EF6C00"
+                break;
+            case "leisure":
+                backgroundColor = "#9E69AF"
                 break;
             default:
                 backgroundColor = "#039BE5"
@@ -120,5 +127,7 @@ class Event extends Component {
         )
     }
 }
-
-export default Event;
+const mapDispatchToProps = {
+    updateEvent
+}
+export default connect(null, mapDispatchToProps)(Event);

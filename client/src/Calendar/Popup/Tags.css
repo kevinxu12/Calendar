@@ -1,13 +1,25 @@
 .btn {
     padding: 5px 5px;
     margin-left: 5px;
-    width: 20%;
+    width: 22%;
     border-color: transparent
 }
 
-#leisure{
+/* #leisure:active{
     background-color: #9E69AF!important
+} */
+
+#leisure{
+    background-color:#9E69AF!important
 }
+
+#leisure:focus,
+#work:focus,
+#social:focus,
+#default:focus {
+    filter: brightness(85%);
+}
+
 
 #work{
     background-color: #EF6C00!important

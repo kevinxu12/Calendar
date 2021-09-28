@@ -15,6 +15,10 @@ render() {
         hour: 'numeric'
     };
     var end_options = {
+        weekday: "short",
+        year: "numeric",
+        month: "2-digit",
+        day: "numeric",
         hour: 'numeric'
     }
     var dateString = data.start.toLocaleString('en', start_options) + " - " + data.end.toLocaleString('en', end_options);

@@ -4,7 +4,6 @@ const userSchema = new Schema({
     email: String,
     name: String,
     friends: [String],
-    busyTimes: [{tag: String, start: Number, end: Number}],
     syncToken: String
 })
 

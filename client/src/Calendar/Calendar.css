@@ -70,6 +70,7 @@ h1, h2, h3, h4, h5, p{
 
 .calendar .col .content{
 	padding: 40px;
+	width: 100%
 }
 
 .calendar ul{
@@ -81,7 +82,7 @@ h1, h2, h3, h4, h5, p{
 }
 
 .calendar .leftCol{
-	width: 40%;
+	width: 30%;
 	background-color: #f7d7d8;
 }
 
@@ -91,13 +92,13 @@ h1, h2, h3, h4, h5, p{
 }
 
 .calendar .rightCol{
-	width: 60%;
+	width: 65%;
 }
 
 .calendar .rightCol h2{
 	color: #C7BEBE;
 	text-align: right;
-	margin-bottom: 70px;
+	margin-bottom: 40px;
 }
 .calendar .months li,
 .calendar .days li{
@@ -108,7 +109,7 @@ h1, h2, h3, h4, h5, p{
 	background-color: #f7d7d8
 }
 
-.calendar .days li:hover {
+.calendar .days .real-day:hover {
 	background-color: #f7d7d8
 }
 

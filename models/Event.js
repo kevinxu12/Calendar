@@ -8,8 +8,8 @@ const eventSchema = new Schema({
     creator: { type: String, text:  true} ,
     owner: String,
     permissions: { type: String, required: false, enum: ['public', 'restricted', 'private'] }, 
-    tag: { type: String, required: false, enum: ['Work', 'Leisure', 'Social', 'Default']},
-    id: String
+    tag: { type: String, required: false, enum: ['work', 'leisure', 'social', 'default']},
+    id: { type: String, index: true}
 })
 eventSchema.index({summary: "text", description: "text", creator: "text"});
 var Event = mongoose.model('event', eventSchema);

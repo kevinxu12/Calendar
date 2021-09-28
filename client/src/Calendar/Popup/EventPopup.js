@@ -40,7 +40,7 @@ class EventPopup extends Component {
     }
 
     handleTagChange(e) {
-        this.setState({tag: e.target.innerText})
+        this.setState({tag: e.target.innerText.toLowerCase()})
     }
 
     // handles the save or submit button

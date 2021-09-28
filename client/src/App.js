@@ -10,7 +10,8 @@ import Dashboard from './Dashboard'
 // claudia's home page
 import HomePage from './HomePage'
 import Scheduling from './Scheduling/SchedulingHome'
-import {homeRoute, dashboardRoute, schedulingRoute} from './Constant/routes';
+import ProfileHome from './Profile/Profile';
+import {homeRoute, dashboardRoute, schedulingRoute, profileRoute} from './Constant/routes';
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +21,7 @@ function App() {
           <Route exact path={dashboardRoute} component={Dashboard} />
           <Route path = "/homepage" component = {HomePage}/>
           <Route path = {schedulingRoute} component = {Scheduling}/>
+          <Route path = {profileRoute} component = {ProfileHome}/>
       </div>
     </BrowserRouter>
   );

@@ -27,6 +27,8 @@ const io = socketIo(server);
 
 require('./models/User');
 require('./models/Event');
+require('./models/Analytics');
+require('./models/Availability');
 
 
 require('./services/socket')(io);
@@ -36,6 +38,9 @@ require('./services/passport');
 require('./routes/authRoutes')(app);
 require('./routes/calendarRoutes')(app);
 require('./routes/calendarAPIRoutes')(app);
+require('./routes/analyticsRoutes')(app);
+require('./routes/userRoutes')(app);
+require('./routes/suggestedEventRoutes')(app);
 
 
 const port = process.env.PORT || 5000;

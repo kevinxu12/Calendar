@@ -5,5 +5,5 @@ export var hours = ['12:00am', '1:00 am', '2:00 am', '3:00 am', '4:00 am',
 '1:00 pm', '2:00 pm', '3:00 pm', '4:00 pm',
 '5:00 pm', '6:00 pm', '7:00 pm', '8:00 pm', '9:00 pm', '10:00 pm', '11:00 pm']
 export var month_abbreviations = {
-    'Jan': 0,'Feb': 1,'Mar': 2,'Apr': 3,'May': 4,'Jun': 5,'Jul': 6,'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+    'jan': 0,'feb': 1,'mar': 2,'apr': 3,'may': 4,'jun': 5,'jul': 6,'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
 }

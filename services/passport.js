@@ -6,6 +6,7 @@ var callbackURL = '/auth/google/callback'
 const mongoose = require('mongoose')
 const User = mongoose.model('user');
 const Event = mongoose.model('event');
+const Analytics = mongoose.model('analytics');
 const helperFunctions = require('./calendarHelperFunctions');
 passport.serializeUser((user, done) => {
     //console.log(user);
@@ -60,47 +61,81 @@ passport.use(new GoogleStrategy({
     } else {
         existingSyncToken = existingUser.syncToken;
     }
+    const existingAnalytics = await Analytics.findOne({ email });
+    if (!existingAnalytics) {
+        const newAnalytics = new Analytics({
+            email,
+            rawFilterTagData: [],
+            rawPickedFriendsData: []
+        });
+        newAnalytics.save();
+    }
+    // load balance
+    var maxUpdates = 0;
+    // sanity check for out of bounds
+    var numLoops = 0;
     //next part of code syncs events
     if (req.query.state !== "nosync") {
-        // another form of logic is deleting everyting and re-entering
-        //known bug large amounts of changes will trigger a pageToken that will fail
 
         var obj = await helperFunctions.buildAuthClient(accessToken, refreshToken);
         var calendar = obj.calendar;
         var oauth2Client = obj.oauth2Client;
-        helperFunctions.getAllEventsTest(calendar, oauth2Client, async function (addedAndUpdatedEvents, deletedEvents, syncToken) {
-            if(syncToken) { 
-                const syncResponse = await User.findOneAndUpdate({email: email}, {$set: {"syncToken": syncToken}});
+        // iterate until you get a synctoken
+        var currentSyncToken = '';
+        var currentPageToken = '';
+        while (!currentSyncToken && numLoops < 50) {
+            numLoops += 1;
+            const response = await helperFunctions.getAllEventsTest(calendar, oauth2Client, email, existingSyncToken, currentPageToken);
+            if (response.error) {
+                console.log("error getting events with sync token");
+                currentSyncToken = "finished";
+            } else {
+                console.log("updating db for specific page/sync token")
+                if (maxUpdates <= 100) {
+                    var addedAndUpdatedEvents = response.addedAndUpdatedList;
+                    var deletedEvents = response.deletedList;
+                    var syncToken = response.syncToken;
+                    var pageToken = response.pageToken;
+
+                    // deal with updates/new events
+                    var updatedAddedIdList = addedAndUpdatedEvents.map((event) => { return event.id });
+                    const deleteResponse = await Event.deleteMany({ id: { $in: updatedAddedIdList } });
+                    maxUpdates += addedAndUpdatedEvents.length;
+                    const eventObjects = addedAndUpdatedEvents.map((event) => {
+                        return new Event({
+                            summary: event.summary,
+                            start: event.start,
+                            end: event.end,
+                            description: event.description,
+                            creator: event.creator,
+                            owner: email,
+                            permissions: 'public',
+                            tag: 'default',
+                            id: event.id
+                        })
+                    })
+                    await Event.insertMany(eventObjects);
+
+                    // logic for deletes
+                    var deletedIdList = deletedEvents.map((event) => { return event.id });
+                    await Event.deleteMany({ id: { $in: deletedIdList } });
+                } else {
+                    console.log("reached max updates of 100 at a time")
+                }
+                // moment you get a valid sync token without a page token you are done
+                if (syncToken) {
+                    await User.findOneAndUpdate({ email: email }, { $set: { "syncToken": syncToken } });
+                    currentSyncToken = syncToken;
+                }
+                // if you still have a page token, lets update this variable, we'll loop again
+                if (pageToken) {
+                    currentPageToken = pageToken;
+                } 
             }
-            // logic for updates and adding 
-            // deals with updates
-            var updatedAddedIdList = addedAndUpdatedEvents.map((event) => { return event.id});
-            Event.deleteMany({id: {$in: updatedAddedIdList} });
-            const eventObjects = addedAndUpdatedEvents.map((event) => {
-                return new Event({
-                    summary: event.summary,
-                    start: event.start,
-                    end: event.end,
-                    description: event.description,
-                    creator: event.creator,
-                    owner: email,
-                    permissions: 'public',
-                    tag: 'Default',
-                    id: event.id
-                })
-            })
-            const eventResponse = await Event.insertMany(eventObjects);
-            console.log(eventResponse);
-
-            // logic for deletes
-            var deletedIdList = deletedEvents.map((event) => { return event.id});
-            const deleteResponse = await Event.deleteMany({id: {$in: deletedIdList}});
-            console.log(deleteResponse);
-
-
-            done(null, { accessToken, refreshToken, profile })
-        }, email, existingSyncToken);
+        }
+        done(null, { accessToken, refreshToken, profile })
+        //});
     } else {
-        done(null, { accessToken, refreshToken, profile }); 
+        done(null, { accessToken, refreshToken, profile });
     }
 }))

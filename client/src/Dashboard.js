@@ -8,7 +8,7 @@ import Filters from './Filter/PersonalFilters';
 import { testEventData } from './test/eventData';
 import { getCalendarDataFromResponse } from './Constant/helperFunctions'
 import { connect } from 'react-redux';
-import { updateDailyEvents, updateSelectedDate} from './actions'
+import { replaceDailyEvents, updateSelectedDate } from './actions'
 class Dashboard extends Component {
     // we should store events in state once we have fetched them
 
@@ -23,28 +23,25 @@ class Dashboard extends Component {
 
     async helperStateUpdater(response, day, monthNumber, year) {
         const data = getCalendarDataFromResponse(response);
-        await this.props.updateSelectedDate({month: months[monthNumber], day: day, year: year, monthNumber: monthNumber })
-        await this.props.updateDailyEvents(data);
+        await this.props.updateSelectedDate({ month: months[monthNumber], day: day, year: year, monthNumber: monthNumber })
+        await this.props.replaceDailyEvents(data);
 
     }
 
-    async componentDidMount() {
-        //const logged_response = await axios.get('/api/currentUser');
-        // insert some logic above about redirecting to home page if not logged in
-        // const date = new Date()
-        // const year = date.getFullYear();
-        // const monthNumber = date.getMonth();
-        // const day = date.getDate();
-        // const response = await axios.post('/api/getAllEventsForDate', { startdate: new Date(year, monthNumber, day) });
-        // await this.helperStateUpdater(response, day, monthNumber, year);
-
-    }
+    // async componentDidMount() {
+    //     const date = this.props.date;
+    //     console.log(date);
+    //     const year = date.year;
+    //     const monthNumber = date.monthNumber;
+    //     const day = date.day;
+    //     const response = await axios.post('/api/getAllEventsForDate', { startdate: new Date(year, monthNumber, day) });
+    //     await this.helperStateUpdater(response, day, monthNumber, year);
+    // }
 
     async handleSelectDay(month, day, year, monthNumber) {
         console.log("handling selected day from calendar");
         const response = await axios.post('/api/getAllEventsForDate', { startdate: new Date(year, monthNumber, day) });
         await this.helperStateUpdater(response, day, monthNumber, year);
-        console.log(this.props.date);
     }
 
     async handleSearch(searchKeyWords, tag) {
@@ -62,28 +59,25 @@ class Dashboard extends Component {
         }
         await this.helperStateUpdater(response, day, monthNumber, year);
         if (tag) {
-            const processedTag  = tag.replace(
-                /(\w)(\w*)/g,
-                (_, firstChar, rest) => firstChar + rest.toLowerCase()
-              );
-            await this.props.updateDailyEvents(this.props.todaysEvents.filter(event => { return event.tag === processedTag }));
+            const processedTag = tag.toLowerCase();
+            await this.props.replaceDailyEvents(this.props.todaysEvents.filter(event => { return event.tag === processedTag }));
         }
 
     }
 
-    handleNewEvent(e) {
-    
-        console.log("clicked on create event");
-        console.log(e.clientY);
-        console.log(this.myRef.current.scrollTop);
-        // down by like 69 or 10%
-        // set state for show pop up
+    // handleNewEvent(e) {
 
-        // once pop up is set to true, render the pop up
+    //     console.log("clicked on create event");
+    //     console.log(e.clientY);
+    //     console.log(this.myRef.current.scrollTop);
+    //     // down by like 69 or 10%
+    //     // set state for show pop up
 
-        // on close, change state
-    
-    }
+    //     // once pop up is set to true, render the pop up
+
+    //     // on close, change state
+
+    // }
     render() {
         return (
             <div>
@@ -91,8 +85,8 @@ class Dashboard extends Component {
                     <Calendar handleSelectDay={this.handleSelectDay}
                     />
                 </div>
-                <div className="day-view" ref = {this.myRef} onClick = {this.handleNewEvent}>
-                    <Day/>
+                <div className="day-view" ref={this.myRef} onClick={this.handleNewEvent}>
+                    <Day />
                 </div>
                 <div className="filters">
                     <Filters search={this.handleSearch} />
@@ -102,13 +96,13 @@ class Dashboard extends Component {
     }
 }
 function mapStateToProps(state) {
-    return { 
+    return {
         todaysEvents: state.todaysEvents,
         date: state.dateInformation
     }
 }
-const mapDispatchToProps =  {
-    updateDailyEvents,
+const mapDispatchToProps = {
+    replaceDailyEvents,
     updateSelectedDate
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
